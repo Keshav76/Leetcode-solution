@@ -1,6 +1,6 @@
 // Question: https://leetcode.com/problems/my-calendar-i/
 
-// My Calendar 1
+// My Calendar I
 
 // Time Series
 
