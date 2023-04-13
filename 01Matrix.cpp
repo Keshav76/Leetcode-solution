@@ -36,3 +36,51 @@ public:
         return ans;
     }
 };
+
+
+
+
+// Question is same but need to find distance of nearest 1 instead of 0
+// Approach 2: Using queue
+// Make a queue of all 1's
+// Apply BFS for all elements of queue at same time
+// Add newly generated 1's to the queue
+// All these elements will be at same distance(1 initially) from 1's
+// Repeat with new 1's
+
+vector<vector<int>>nearest(vector<vector<int>> arr)
+{
+    int r = arr.size(), c = arr[0].size();
+    vector<vector<int>> ans(r, vector<int> (c, -1));
+    queue<pair<int, int>> q;
+    int dist = 1, zero = 0;
+    for (int i = 0; i < r; i ++) {
+        for (int j = 0; j < c; j ++) {
+            if (arr[i][j] == 1){
+                q.push({i,j}); 
+                ans[i][j] = 0;
+            }
+            else zero ++;
+        }
+    }
+    while (!q.empty() && zero > 0) {
+        int n = q.size();
+        for (int x = 0; x < n; x ++) {
+            auto curr = q.front();
+            q.pop();
+            vector<pair<int, int>> dir = {{-1,0},{1,0},{0,-1},{0,1}};
+            for (auto ele: dir) {
+                int row = curr.first + ele.first;
+                int col = curr.second + ele.second;
+                if (row < 0 || col < 0 || row >= r || col >= c || arr[row][col] == 1) 
+                    continue;
+                ans[row][col] = dist;
+                arr[row][col] = 1;
+                q.push({row, col});
+                zero --;
+            }
+        }
+        dist ++;
+    }
+    return ans;
+}
