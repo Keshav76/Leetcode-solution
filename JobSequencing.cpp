@@ -30,3 +30,50 @@ vector<int> JobScheduling(Job arr[], int n)
   }
   return {count, profit};
 }
+
+
+
+
+// Approach 2: Use disjoint set instead of array for storing deadlines
+
+class DisjointSet {
+    public: 
+    vector<int> parent;
+    DisjointSet(int n) {
+        parent = vector<int>(n);
+        for (int i = 0; i < n; i ++) parent[i] = i;
+    }
+    int findParent(int node) {
+        if (node == parent[node]) return node;
+        return parent[node] = findParent(parent[node]);
+    }
+    void unionSet(int u, int v) {
+        parent[u] = v;
+    }
+};
+
+class Solution {
+    public:
+    static bool cmp(Job a, Job b) {
+        return a.profit > b.profit;
+    }
+    vector<int> JobScheduling(Job arr[], int n) {
+        sort (arr, arr + n, cmp);
+        int maxDead = 0;
+        for (int i = 0; i < n; i ++) {
+            maxDead = max(maxDead, arr[i].dead);
+        }
+        int ans = 0, count = 0;
+        DisjointSet djs(maxDead + 1);
+        for (int i = 0; i < n; i ++) {
+            Job ele = arr[i];
+            int d = djs.findParent(ele.dead);
+            if (d != 0) {
+                djs.unionSet(d, d-1);
+                ans += ele.profit;
+                count ++;
+            }
+        }
+        return {count, ans};
+    } 
+};
