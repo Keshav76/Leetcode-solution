@@ -1,36 +1,52 @@
-// Question: https://leetcode.com/problems/4sum
-
-// 4Sum
-
-// Approach: Sort then two nested for loops then two pointer
-
 class Solution {
 public:
-    vector<vector<int>> fourSum(vector<int>& arr, int target) {
-        sort(arr.begin(), arr.end());
-        vector<vector<int>> ans;
-        int n = arr.size();
-        for (int a = 0; a < n - 3; a ++) {
-            if (a > 0 && arr[a] == arr[a-1]) continue;
-            for (int b = a + 1; b < n - 2; b ++) {
-                if (b > a+1 && arr[b] == arr[b-1]) continue;
-                int c = b + 1, d = n - 1;
-                while (c < d) {
-                    if (arr[a] + long(arr[b]) + arr[c] + arr[d] == target) {
-                        ans.push_back({arr[a], arr[b], arr[c], arr[d]});
-                        c ++; d --;
-                        while (c < d && arr[c] == arr[c - 1]) c ++;
-                        while (d > c && arr[d] == arr[d + 1]) d --;
-                    }
-                    else if (arr[a] + long(arr[b]) + arr[c] + arr[d] > target) {
-                        d --;
-                    }
-                    else {
-                        c ++;
-                    }
-                }
-            }
-        }
-        return ans;
+  vector<vector<int>> fourSum(vector<int> &nums, int target) {
+    sort(nums.begin(), nums.end());
+    vector<vector<int>> ans;
+    vector<int> path;
+    ksum(nums, target, ans, path, 4);
+    return ans;
+  }
+  void ksum(vector<int> &nums, int target, vector<vector<int>> &ans,
+            vector<int> &path, int k = 3, int l = 0) {
+
+    if (k == 2) {
+      return twoSum(nums, target, ans, path, l);
     }
+
+    int n = nums.size();
+    for (int i = l; i < n; i++) {
+      path.push_back(nums[i]);
+      ksum(nums, target - nums[i], ans, path, k - 1, i + 1);
+      path.pop_back();
+      while (i < n - 1 && nums[i] == nums[i + 1])
+        i++;
+    }
+  }
+
+  void twoSum(vector<int> &nums, int target, vector<vector<int>> &ans,
+              vector<int> &path, int l = 0) {
+
+    int r = nums.size() - 1;
+
+    while (l < r) {
+      if (nums[l] + nums[r] == target) {
+        path.push_back(nums[l]);
+        path.push_back(nums[r]);
+        ans.push_back(path);
+        path.pop_back();
+        path.pop_back();
+
+        while (l < r && nums[l + 1] == nums[l])
+          l++;
+        while (l < r && nums[r - 1] == nums[r])
+          r--;
+        l++;
+        r--;
+      } else if (nums[l] + nums[r] > target)
+        r--;
+      else
+        l++;
+    }
+  }
 };
